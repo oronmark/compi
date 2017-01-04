@@ -134,7 +134,7 @@
 		(equal? (get-lambda-var-param l-expr) v)
 		))
 
-(define param-member?
+(define member-param?
 	(lambda (l-expr v)
 		(or (member-simple?  l-expr v) (member-opt?  l-expr v) (member-var?  l-expr v))
 		))

@@ -4,14 +4,11 @@
 
 
 
-
-
 (define set?
-	(lambda (expr v)
+	(lambda (expr v)  ;first iteration with original lambda body only
 		(cond ((equal? (car expr) 'set) (if (equal? (get-set-var expr) `(var ,v))
 											#t
 											#f))
-
 			  ((equal? (car expr) 'if3) (or (set? (get-if-test expr) v) 
 			  								(set? (get-if-dit expr) v) 
 			  								(set? (get-if-dif expr) v)))
@@ -21,18 +18,32 @@
 			  								   (ormap (lambda (ex) (set? ex v)) (get-applic-operands expr))))
 			  ((equal? (car expr) 'seq) (ormap (lambda (ex) (set? ex v)) (get-seq-list expr)))
 			  ((equal? (car expr) 'or) (ormap (lambda (ex) (set? ex v)) (get-or-body expr)))
-			  ((and (equal? (car expr) 'lambda-simple) 
-			  	   (not (member-simple v (get-lambda-simple-param expr)))) (set? (get-lambda-simple-body expr) v))
-			  ((and (equal? (car expr) 'lambda-opt) 
-			  	   (not (member-opt v (get-lambda-opt-param expr)))) (set? (get-lambda-opt-body expr) v))
-			  ((and (equal? (car expr) 'lambda-var) 
-			  	   (not (equal? v (get-lambda-var-param expr)))) (set? (get-lambda-var-body expr) v))
+			  ((and (is-lambda-expr? expr) (not (member-param? expr v))) (set? (get -get-lambda-body expr) v))			  	   
+			  (else #f))
+		))
+
+(define read?
+	(lambda (expr v)  ;check for expr=(var v) in nested scope
+		(cond ((equal? (car expr) 'set) (or (read? (get-set-var expr) v) (read? (get-set-val expr) v)))
+			  ((equal? (car expr) 'var) (equal? expr `(var ,v)))
+			  ((equal? (car expr) 'if3) (or (read? (get-if-test expr) v) 
+			  								(read? (get-if-dit expr) v) 
+			  								(read? (get-if-dif expr) v)))
+			  ((equal? (car expr) 'def) (or (read? (get-def-var expr) v) 
+			  								(read? (get-def-val expr) v)))
+			  ((equal? (car expr) 'applic) (or (read? (get-applic-operator expr) v)
+			  								   (ormap (lambda (ex) (read? ex v)) (get-applic-operands expr))))
+			  ((equal? (car expr) 'seq) (ormap (lambda (ex) (read? ex v)) (get-seq-list expr)))
+			  ((equal? (car expr) 'or) (ormap (lambda (ex) (read? ex v)) (get-or-body expr)))
+			  ((and (is-lambda-expr? expr) (not (member-param? expr v))) (read? (get -get-lambda-body expr) v))			  	   
 			  (else #f))
 		))
 
 
 
-(define to-box?;;; fix
+
+
+(define to-box?
 	(lambda (l-expr v)
           (and (read? (get-lambda-body l-expr)) (set? (get-lambda-body l-expr)) (bound? (get-lambda-body l-expr)))
 		))
@@ -50,7 +61,7 @@
 
 		))
 
-; in this point l-expr is lambda-expression and v is a variable that needs boxing
+
 (define box  
 	(lambda (l-expr v minor)  
 		(let* ((l-type (car l-expr))
@@ -88,24 +99,9 @@
 
 
 
-
-
-
-
-
-
-;;assignment sections:
-;;3- eliminate-nested-defines
-;;4- remove-applic-lambda-nil
-;;5- box-set
-;;6- pe->lex-pe
-;;7- annotate-tc
-	
-(define run
-  (lambda (expr sec)
-    (cond ((eq? sec 3) (eliminate-nested-defines expr))
-          ((eq? sec 4) (remove-applic-lambda-nil expr))
-          ((eq? sec 5) (box-set expr))
-          ((eq? sec 6) (pe->lex-pe expr))
-          (else (annotate-tc expr))
-          )))
+(define expr (parse 
+	'(lambda (a)
+		(set! a 3)
+		(lambda (y)
+			y
+			(a operand)))))
