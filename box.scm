@@ -18,12 +18,13 @@
 			  								   (ormap (lambda (ex) (set? ex v)) (get-applic-operands expr))))
 			  ((equal? (car expr) 'seq) (ormap (lambda (ex) (set? ex v)) (get-seq-list expr)))
 			  ((equal? (car expr) 'or) (ormap (lambda (ex) (set? ex v)) (get-or-body expr)))
-			  ((and (is-lambda-expr? expr) (not (member-param? expr v))) (set? (get -get-lambda-body expr) v))			  	   
+			  ((and (is-lambda-expr? expr) (not (member-param? expr v))) (set? (get-lambda-body expr) v))			  	   
 			  (else #f))
 		))
 
 (define read?
 	(lambda (expr v)  ;check for expr=(var v) in nested scope
+
 		(cond ((equal? (car expr) 'set) (or (read? (get-set-var expr) v) (read? (get-set-val expr) v)))
 			  ((equal? (car expr) 'var) (equal? expr `(var ,v)))
 			  ((equal? (car expr) 'if3) (or (read? (get-if-test expr) v) 
@@ -35,28 +36,45 @@
 			  								   (ormap (lambda (ex) (read? ex v)) (get-applic-operands expr))))
 			  ((equal? (car expr) 'seq) (ormap (lambda (ex) (read? ex v)) (get-seq-list expr)))
 			  ((equal? (car expr) 'or) (ormap (lambda (ex) (read? ex v)) (get-or-body expr)))
-			  ((and (is-lambda-expr? expr) (not (member-param? expr v))) (read? (get -get-lambda-body expr) v))			  	   
+			  ((and (is-lambda-expr? expr) (not (member-param? expr v))) (read? (get-lambda-body expr) v))			  	   
 			  (else #f))
 		))
+
+
+(define bound?
+	(lambda (expr v)
+		(cond ((equal? (car expr) 'set) (or (bound? (get-set-var expr) v) (bound? (get-set-val expr) v)))
+			  ((equal? (car expr) 'if3) (or (bound? (get-if-test expr) v) 
+			  								(bound? (get-if-dit expr) v) 
+			  								(bound? (get-if-dif expr) v)))
+			  ((equal? (car expr) 'def) (or (bound? (get-def-var expr) v) 
+			  								(bound? (get-def-val expr) v)))
+			  ((equal? (car expr) 'applic) (or (bound? (get-applic-operator expr) v)
+			  								   (ormap (lambda (ex) (bound? ex v)) (get-applic-operands expr))))
+			  ((equal? (car expr) 'seq) (ormap (lambda (ex) (bound? ex v)) (get-seq-list expr)))
+			  ((equal? (car expr) 'or) (ormap (lambda (ex) (bound? ex v)) (get-or-body expr)))
+			  ((and (is-lambda-expr? expr) (not (member-param? expr v))) (read? expr v))		  	   
+			  (else #f))           
+	))
+
+
 
 
 
 
 
 (define to-box?
-	(lambda (l-expr v)
-          (and (read? (get-lambda-body l-expr)) (set? (get-lambda-body l-expr)) (bound? (get-lambda-body l-expr)))
+	(lambda (l-expr v)	
+         (and (read? (get-lambda-body l-expr) v) (set? (get-lambda-body l-expr) v) (bound? (get-lambda-body l-expr) v))
 		))
 
-(define box-var  ;;need to fix this
+(define box-var  
 	(lambda (expr v)
 		(cond ((null? expr) expr)
 		      ((atom? expr) expr)
 		      ((equal? expr `(var ,v)) `(box-get (var ,v)))
 		      ((and (equal? (car expr) 'set) (equal? (cadr expr) `(var ,v))) `(box-set ,(cadr expr) ,(box-var (caddr expr) v)))
-                 ((and (equal? (car expr) 'lambda-simple) (member-simple? v expr)) expr)
-                 ((and (equal? (car expr) 'lambda-opt) (member-opt? v expr)) expr)
-                 ((and (equal? (car expr) 'lambda-var) (equal? v (cadr expr))) expr)                 
+              ((and (is-lambda-expr? expr) (member-param? expr v)) expr)               
 		      (else (map (lambda (ex) (box-var ex v)) expr)))
 
 		))
@@ -99,9 +117,35 @@
 
 
 
-(define expr (parse 
-	'(lambda (a)
-		(set! a 3)
-		(lambda (y)
-			y
-			(a operand)))))
+
+
+;;assignment sections:
+;;3- eliminate-nested-defines
+;;4- remove-applic-lambda-nil
+;;5- box-set
+;;6- pe->lex-pe
+;;7- annotate-tc
+	
+(define run
+  (lambda (expr sec)
+    (cond ((eq? sec 3) (eliminate-nested-defines expr))
+          ((eq? sec 4) (remove-applic-lambda-nil expr))
+          ((eq? sec 5) (box-set expr))
+          ((eq? sec 6) (pe->lex-pe expr))
+          (else (annotate-tc expr))
+          )))
+
+
+
+(define run-sq
+   (lambda (expr sec)
+	  (cond ((eq? sec 3) (run expr 3))
+	  		((eq? sec 4) (run (run expr 3) 4))
+	  		((eq? sec 5) (run (run (run expr 3) 4) 5))
+	  		((eq? sec 6) (run (run (run (run expr 3) 4) 5) 6))
+	  		(else (run (run (run (run (run expr 3) 4) 5) 6) 7)))
+
+  
+ 
+
+		))

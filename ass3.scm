@@ -136,7 +136,9 @@
 
 (define member-param?
 	(lambda (l-expr v)
-		(or (member-simple?  l-expr v) (member-opt?  l-expr v) (member-var?  l-expr v))
+		(cond ((equal? (car l-expr ) 'lambda-simple) (member-simple? l-expr v))
+          ((equal? (car l-expr ) 'lambda-opt) (member-opt? l-expr v))
+          (else  (member-var? l-expr v)))
 		))
 
 
@@ -425,21 +427,7 @@
 
 ; ------------------------------------- Eliminate Nested Defines ;
 
-;;assignment sections:
-;;3- eliminate-nested-defines
-;;4- remove-applic-lambda-nil
-;;5- box-set
-;;6- pe->lex-pe
-;;7- annotate-tc
-	
-(define run
-  (lambda (expr sec)
-    (cond ((eq? sec 3) (eliminate-nested-defines expr))
-          ((eq? sec 4) (remove-applic-lambda-nil expr))
-          ((eq? sec 5) (box-set expr))
-          ((eq? sec 6) (pe->lex-pe expr))
-          (else (annotate-tc expr))
-          )))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

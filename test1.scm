@@ -4,7 +4,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(load "ass3.scm")
+(load "box.scm")
 (define test-func (lambda (x) 
 		    (annotate-tc
 		      (pe->lex-pe
@@ -64,58 +64,62 @@
 		(newline))
 ))
 
+;; passed
+;- failed
+; not checked
+
 (define Tests
   (list
-    '(lambda (x) x)
+  ;; '(lambda (x) x)
     
-    '(lambda (x y) x y (lambda (a b c) a b c))
+  ;;  '(lambda (x y) x y (lambda (a b c) a b c))
     
-    '(lambda (x y) (lambda (a b c) a b c) x y)
+  ;;  '(lambda (x y) (lambda (a b c) a b c) x y)
 				    
-    '(lambda (x y) ((lambda (a b c) a b c) 5 6 7) x y)
+  ;;  '(lambda (x y) ((lambda (a b c) a b c) 5 6 7) x y)
 				   
-    '(lambda (a b c d e) ((lambda (a b c) (lambda (z e1) (e1 5))) 5 6 7))
+  ;;  '(lambda (a b c d e) ((lambda (a b c) (lambda (z e1) (e1 5))) 5 6 7))
 							  
-    '(lambda (a b c d e) ((lambda (a b c) (lambda () 5))))
+  ;;  '(lambda (a b c d e) ((lambda (a b c) (lambda () 5))))
 
-    '(lambda (x) (define a 5) b)   
+  ;; '(lambda (x) (define a 5) b)   
 	    
-    '(lambda (x) (lambda (y) (define x 10) (a 5)))  
+  ;;  '(lambda (x) (lambda (y) (define x 10) (a 5)))  
 
-    '(lambda (x) (define y (lambda () (define a 5) 4)) 1)    
+  ;; '(lambda (x) (define y (lambda () (define a 5) 4)) 1)    
      
-    '(lambda (x) (define a 5) (lambda (y) (define x 10) (a 5)))    
+  ;;  '(lambda (x) (define a 5) (lambda (y) (define x 10) (a 5)))    
     ;;;;;don't remove comment;;;;;;'(lambda (x) (define a 5) (define a 123) (lambda (y) (define x 10) (a 5)) 2)
      
- ;  '(lambda (z) (define a 5) (define b 123) (lambda (y) (define x 10))) 
-;	(define x1 (lambda (abc) (define a 56) (define x1 10) (+ 1 2))) (f 32 45 'a)) (a 5))
+  ;- '(lambda (z) (define a 5) (define b 123) (lambda (y) (define x 10)
+	;-(define x1 (lambda (abc) (define a 56) (define x1 10) (+ 1 2))) (f 32 45 'a)) (a 5))
 
      
- ;    '(define x (lambda (x) x))
+  ;;  '(define x (lambda (x) x))
 
         
-  ;   '(define my-even? (lambda (e) (define even? (lambda (n) (or (zero? n) (odd? (- n 1))))) #t))
+  ;;   '(define my-even? (lambda (e) (define even? (lambda (n) (or (zero? n) (odd? (- n 1))))) #t))
 
 
-   ;   '(define odd? (lambda (n) (and (positive? n) (even? (- n 1)))))
+   ;;   '(define odd? (lambda (n) (and (positive? n) (even? (- n 1)))))
 
 
-    ;  '(even? e)
+   ;;   '(even? e)
       
-      ;'(lambda x (lambda (a . b) a (lambda (b) b c (f (lambda (y) (define a 5) a)))))
+   ;-   '(lambda x (lambda (a . b) a (lambda (b) b c (f (lambda (y) (define a 5) a))))) ;;error with part 7
 
 
 
-;  '(lambda (x) ((f (lambda (z) z)) (lambda (y) y)))
+;;  '(lambda (x) ((f (lambda (z) z)) (lambda (y) y)))
 
 
-    ;  '(lambda (x) (lambda (y) (lambda (z) z)))
+   ;;   '(lambda (x) (lambda (y) (lambda (z) z)))
 
 
-   ;   '(lambda (x) (lambda (y) (lambda (z) (define x 1) (define y 2) (define z 3) y)))
+   ;;   '(lambda (x) (lambda (y) (lambda (z) (define x 1) (define y 2) (define z 3) y)))
 
        
-     ; '(lambda (x . y) 1)
+      '(lambda (x . y) 1)
 
 	 
     ;  '(lambda (x . y) (lambda (x) y x (set! x 1) (* x 1)))
