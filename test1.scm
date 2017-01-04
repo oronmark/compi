@@ -246,10 +246,10 @@
  ;;   '(begin (a (a (b (c 2) d))) (f 1) (g 2) (z) 1 (h 3) (a (a (b (c 2) d))))
 
                
- ;   '(((lambda (a b c d) (begin (a (a (b (c 2) d))) (f 1) (g 2) (z) 1 (h 3) (a (a (b (c 2) ((lambda () ((lambda () d))))))))))) ;;error
+ ;-  '(((lambda (a b c d) (begin (a (a (b (c 2) d))) (f 1) (g 2) (z) 1 (h 3) (a (a (b (c 2) ((lambda () ((lambda () d))))))))))) ;;error
 
 
- ;  '((lambda () 5)) ;;error with rdundent applic
+ ;-  '((lambda () 5)) ;;error with rdundent applic
 
       
  ;  '(lambda (x) (x x) (display "asaf"))
