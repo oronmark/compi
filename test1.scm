@@ -116,141 +116,140 @@
    ;;   '(lambda (x) (lambda (y) (lambda (z) z)))
 
 
-   ;;   '(lambda (x) (lambda (y) (lambda (z) (define x 1) (define y 2) (define z 3) y)))
+   ;  '(lambda (x) (lambda (y) (lambda (z) (define x 1) (define y 2) (define z 3) y)))
 
        
-      '(lambda (x . y) 1)
+     ;; '(lambda (x . y) 1)
 
 	 
-    ;  '(lambda (x . y) (lambda (x) y x (set! x 1) (* x 1)))
+   ;;  '(lambda (x . y) (lambda (x) y x (set! x 1) (* x 1)))
 
 
-   ;   '(lambda (x) x (f (lambda (y) (define a 5) y)))
+   ;-   '(lambda (x) x (f (lambda (y) (define a 5) y))) ;;error with part 3
 
 			  
-  ;  '(let ((a 0))
-	;  (list
-	;  (lambda () a)
-	;  (lambda () (set! a (+ a 1)))
-	;  (lambda (b) (set! a b))))	
+  ;;  '(let ((a 0))
+	;;  (list
+	;;  (lambda () a)
+	;;  (lambda () (set! a (+ a 1)))
+	;;  (lambda (b) (set! a b))))	
 
 	  
-;    '(let* ((c 0)
-;	  (a (box c)))
-;	  (list
-;	  (lambda () a)
-;	  (lambda () (set! a (+ a 1)))
-;	  (lambda (b) (set! a b))))
+  ;;  '(let* ((c 0)
+	;;  (a (box c)))
+	;;  (list
+	;;  (lambda () a)
+	;;  (lambda () (set! a (+ a 1)))
+	;;  (lambda (b) (set! a b))))
 
 
- ;   '(lambda (a . b) a)
-
-       
-;    '(lambda (a . b) (lambda () a))
+ ;;   '(lambda (a . b) a)
 
        
- ;   '(lambda (a . b) (begin (lambda () a) (set! a 5)))
+;;    '(lambda (a . b) (lambda () a))
+
+       
+ ;;   '(lambda (a . b) (begin (lambda () a) (set! a 5)))
 
 		
- ;   '(let ((a 0) (c 1))
-;	  (list
-;	  (lambda () a)
-;	  (lambda () (set! a (+ a 1)))
-;	  (lambda (b) (set! a b))
-;;	  (lambda () c)
-;	  (lambda () (set! c (+ a 1)))
-;	  (lambda (b) (set! c b))    
-;	))
+ ;-   '(let ((a 0) (c 1))
+;-	  (list
+;-	  (lambda () a)
+;-	  (lambda () (set! a (+ a 1)))
+;-	  (lambda (b) (set! a b))
+;-	  (lambda () c)
+;-	  (lambda () (set! c (+ a 1)))
+;-	  (lambda (b) (set! c b))    
+;-	))
 
 	  
- ;   '(lambda (a b) (begin a (set! a b) (lambda () a) (lambda (a b) (+ a b))))
+ ;;   '(lambda (a b) (begin a (set! a b) (lambda () a) (lambda (a b) (+ a b))))
 
 		  
- ;   '(lambda (a) a)
+ ;;   '(lambda (a) a)
 
        
-;    '(lambda (a b) a c (lambda (a . b) b))
+;;    '(lambda (a b) a c (lambda (a . b) b))
 
 
-;    '(lambda (a b) a (lambda (b . c) b))
+;    '(lambda (a b) a (lambda (b . c) b))  ;;;error part7
 
 
- ;   '(lambda () (+ 1 2))
+ ;;   '(lambda () (+ 1 2))
 
 
- ;   '(lambda (+) (+ 1 2))
+ ;;  '(lambda (+) (+ 1 2))
 
 
-  ;  '(lambda a a)
+  ;; '(lambda a a)
 
        
- ;   '(a (lambda a a) (lambda (a) a) a (lambda (a) (lambda () a) a))
+ ;;  '(a (lambda a a) (lambda (a) a) a (lambda (a) (lambda () a) a))
 
 
- ;   '((lambda (a) a) (lambda (b) b d) (lambda (c) c))
+ ;;   '((lambda (a) a) (lambda (b) b d) (lambda (c) c))
 
 
-;    '((lambda (a) a) (lambda (b) b) (lambda (c) c) d)
+;;   '((lambda (a) a) (lambda (b) b) (lambda (c) c) d)
 
 	    
- ;   '(lambda (a b) (lambda (c) a))
+ ;;   '(lambda (a b) (lambda (c) a))
 
        
- ;   '(lambda (a b) (lambda (c) a (lambda () b)))
-
-;
- ;   '(lambda () a (lambda () (lambda () b)))
-
-  ;  
-;    '(f (g (h (a (b (abc (lambda () a (lambda () (lambda () b)))))))))
-;
-
- ;   '(lambda (a b) (lambda (c) a (lambda () b (lambda (d) c))))
+ ;;   '(lambda (a b) (lambda (c) a (lambda () b)))
 
 
-;    '(f (lambda (a b) (lambda (c) a (lambda () (lambda (d) (lambda x a))))))
+  ;;  '(lambda () a (lambda () (lambda () b)))
+
+    
+;;    '(f (g (h (a (b (abc (lambda () a (lambda () (lambda () b)))))))))
 
 
-;    '((lambda (a) (begin a (lambda () a) (lambda (a) a))))
+ ;;   '(lambda (a b) (lambda (c) a (lambda () b (lambda (d) c))))
 
 
-;    '(lambda (a b) c d (lambda () c d))
+;;   '(f (lambda (a b) (lambda (c) a (lambda () (lambda (d) (lambda x a))))))
 
 
- ;   '(x (lambda (x) (x (lambda () (x (lambda () (x x)))))))
-
-		      
- ;   '(lambda (a b) (lambda (c) (+ a b c)))
+;;    '((lambda (a) (begin a (lambda () a) (lambda (a) a))))
 
 
- ;   '(define fact (lambda (n) (if (zero? n) 1 (* n (fact (- n 1)))))) 
+ ;;   '(lambda (a b) c d (lambda () c d))
 
 
- ;  '(set! x (f 1))
+ ;;   '(x (lambda (x) (x (lambda () (x (lambda () (x x)))))))
+
+;;   '(lambda (a b) (lambda (c) (+ a b c)))
+
+
+ ;;   '(define fact (lambda (n) (if (zero? n) 1 (* n (fact (- n 1)))))) 
+
+
+ ;;  '(set! x (f 1))
 
       
-;    '(or (f 1) (f (f 1)) (a (a (b (c 2) d))) (g 2) (z) 1 (h 3) (a (a (b (c 2) d))))
+;;    '(or (f 1) (f (f 1)) (a (a (b (c 2) d))) (g 2) (z) 1 (h 3) (a (a (b (c 2) d))))
 
 		  
-;    '(lambda (a) (or (f 1) (f (f 1)) (a (a (b (c 2) d))) (g 2) (z) 1 (h 3) (a (a (b (c 2) d)))))		    
+;;    '(lambda (a) (or (f 1) (f (f 1)) (a (a (b (c 2) d))) (g 2) (z) 1 (h 3) (a (a (b (c 2) d)))))		    
 
 			
-;    '(lambda (a) (or (f 1) (f (f 1)) (a (a (b (c 2) d))) (g 2) (z) 1 (h 3) (a (a (b (c 2) d)))) (a (b 1)))
+;;   '(lambda (a) (or (f 1) (f (f 1)) (a (a (b (c 2) d))) (g 2) (z) 1 (h 3) (a (a (b (c 2) d)))) (a (b 1)))
 
 
- ;   '(and (a (a (b (c 2) d))) (f (f 1)) (a (a (b (c 2) d))) (g 2) (z) 1 (h 3) (a (a (b (c 2) d))))
+ ;;   '(and (a (a (b (c 2) d))) (f (f 1)) (a (a (b (c 2) d))) (g 2) (z) 1 (h 3) (a (a (b (c 2) d))))
 
 	
- ;   '(let ((a 1)) (and (a (a (b (c 2) d))) (f (f 1)) (a (a (b (c 2) d))) (g 2) (z) 1 (h 3) (a (a (b (c 2) d)))))	
+ ;;   '(let ((a 1)) (and (a (a (b (c 2) d))) (f (f 1)) (a (a (b (c 2) d))) (g 2) (z) 1 (h 3) (a (a (b (c 2) d)))))	
 
 	  
- ;   '(begin (a (a (b (c 2) d))) (f 1) (g 2) (z) 1 (h 3) (a (a (b (c 2) d))))
+ ;;   '(begin (a (a (b (c 2) d))) (f 1) (g 2) (z) 1 (h 3) (a (a (b (c 2) d))))
 
                
- ;   '(((lambda (a b c d) (begin (a (a (b (c 2) d))) (f 1) (g 2) (z) 1 (h 3) (a (a (b (c 2) ((lambda () ((lambda () d)))))))))))
+ ;   '(((lambda (a b c d) (begin (a (a (b (c 2) d))) (f 1) (g 2) (z) 1 (h 3) (a (a (b (c 2) ((lambda () ((lambda () d))))))))))) ;;error
 
 
-;   '((lambda () 5))
+ ;  '((lambda () 5)) ;;error with rdundent applic
 
       
  ;  '(lambda (x) (x x) (display "asaf"))
