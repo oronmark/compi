@@ -12,8 +12,8 @@
 
     
 (define get-or-body
-	(lambda (or-expr)
-		(cadr or-expr)
+	(lambda (expr)
+		(cadr expr)
 		))
 
 (define remove-last-elem
@@ -61,11 +61,11 @@
 
 (define get-lambda-opt-param
   (lambda (l-expr)
-    (cadr expr)))
+    (cadr l-expr)))
 
 (define get-lambda-opt-param-list
   (lambda (l-expr)
-    (caddr expr)))
+    (caddr l-expr)))
 
 (define get-lambda-var-param
   (lambda (l-expr)
@@ -148,40 +148,58 @@
 (define make-expr-no-redundant
 	(lambda (expr)
 		(let*  
-			((op (cadr expr))
-			 (args (caddr expr)))	
-				(if (and (is-lambda-expr? expr) (null? args))
-                                    (get-lambda-body expr)
+			((op (get-applic-operator expr))
+			 (args (get-applic-operands expr)))	
+				(if (and (is-lambda-expr? op) (null? args))
+                                   (get-lambda-body op)
                                     expr)
 			)
  ))
 
 
-					
 (define remove-applic-lambda-nil
- 	(lambda (expr)
- 		(cond ((atom? expr) expr)
- 	              ((equal? (car expr) 'applic) (map remove-applic-lambda-nil (make-expr-no-redundant expr)))
- 	              (else (map remove-applic-lambda-nil expr))
- 			)
- 		))
+  (lambda (expr)
+          (cond ((equal? (car expr) 'or) `(or ,(map remove-applic-lambda-nil (get-or-body expr))))
+
+                ((equal? (car expr) 'seq) `(seq ,(map remove-applic-lambda-nil (get-seq-list expr))))
+                ((equal? (car expr) 'set) `(set ,(remove-applic-lambda-nil (get-set-var expr))
+                                                ,(remove-applic-lambda-nil (get-set-val expr))))
+                ((equal? (car expr) 'if3) `(if3 ,(remove-applic-lambda-nil (get-if-test expr))
+                                                ,(remove-applic-lambda-nil (get-if-dit expr))
+                                                ,(remove-applic-lambda-nil (get-if-dif expr))))
+                ((equal? (car expr) 'def) `(def ,(remove-applic-lambda-nil (get-def-var expr))
+                                                ,(remove-applic-lambda-nil (get-def-val expr))))
+                ((equal? (car expr) 'lambda-simple) `(lambda-simple ,(get-lambda-simple-param expr) 
+                                                                    ,(remove-applic-lambda-nil (get-lambda-body expr)))) 
+                ((equal? (car expr) 'lambda-opt) `(lambda-opt ,(get-lambda-opt-param expr) ,(get-lambda-opt-param-list expr)
+                                                              ,(remove-applic-lambda-nil (get-lambda-body expr))))
+                ((equal? (car expr) 'lambda-var) `(lambda-var ,(get-lambda-var-param expr) 
+                                                                    ,(remove-applic-lambda-nil (get-lambda-body expr))))                                         
+
+                ((equal? (car expr) 'applic) (make-expr-no-redundant `(applic ,(remove-applic-lambda-nil (get-applic-operator expr))
+                                                                              ,(map remove-applic-lambda-nil  
+                                                                                    (get-applic-operands expr)))))
+
+                (else expr))
+    ))
 
 
 
 ;;--------------------------------------------------------------------------------------- part 7
 
-;;need to fix using part 6  
 (define tc
-        (lambda (expr tp?)
-         ;  (disp expr)
-		(cond ((equal? (car expr) 'or) `(or ,(append (map (lambda (ex) (tc ex #f)) (remove-last-elem (get-or-body expr))) (list (tc (get-last-elem (get-or-body expr)) tp?)))))
+  (lambda (expr tp?)
+		(cond ((equal? (car expr) 'or) `(or ,(append (map (lambda (ex) (tc ex #f)) (remove-last-elem (get-or-body expr))) 
+                                         (list (tc (get-last-elem (get-or-body expr)) tp?)))))
                  ((equal? (car expr) 'seq) `(seq ,(append (map (lambda (ex) (tc ex #f)) (remove-last-elem (get-or-body expr))) 
                                                           (list (tc (get-last-elem (get-or-body expr)) tp?)))))
                  ((equal? (car expr) 'set) `(set ,(get-set-var expr) ,(tc (get-set-val expr) tp?)))
                  ((equal? (car expr) 'if3) `(if3 ,(tc (get-if-test expr) #f) ,(tc (get-if-dit expr) tp?) ,(tc (get-if-dif expr) tp?)))
                  ((equal? (car expr) 'def) `(def ,(get-def-var expr) ,(tc (get-def-val expr) #f)))
-                 ((equal? (car expr) 'lambda-simple) `(lambda-simple ,(get-lambda-simple-param expr) ,(tc (get-lambda-simple-body expr) #t)))
-                 ((equal? (car expr) 'lambda-opt) `(lambda-opt ,(get-lambda-opt-param expr) ,(get-lambda-opt-param-list expr)  ,(tc (get-lambda-opt-body expr) #t)))
+                 ((equal? (car expr) 'lambda-simple) `(lambda-simple ,(get-lambda-simple-param expr) 
+                                                      ,(tc (get-lambda-simple-body expr) #t)))
+                 ((equal? (car expr) 'lambda-opt) `(lambda-opt ,(get-lambda-opt-param expr) ,(get-lambda-opt-param-list expr)  
+                                                  ,(tc (get-lambda-opt-body expr) #t)))
                  ((equal? (car expr) 'lambda-var) `(lambda-var ,(get-lambda-var-param expr),(tc (get-lambda-var-body expr) #t)))
                  ((equal? (car expr) 'applic) (if (eq? tp? #f)
                           `(applic ,(tc (get-applic-operator expr) #f) ,(map (lambda (ex) (tc ex #f)) (get-applic-operands expr)))
