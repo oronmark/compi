@@ -26,7 +26,8 @@
 (define read?
 	(lambda (expr v)  ;check for expr=(var v) in nested scope
 	;	(display "read?\n")
-		(cond ((equal? (car expr) 'set) (or (read? (get-set-var expr) v) (read? (get-set-val expr) v)))
+		(cond ;((equal? (car expr) 'set) (or (read? (get-set-var expr) v) (read? (get-set-val expr) v)))
+			  ((equal? (car expr) 'set) (read? (get-set-val expr) v))
 			  ((equal? (car expr) 'var) (equal? expr `(var ,v)))
 			  ((equal? (car expr) 'if3) (or (read? (get-if-test expr) v) 
 			  								(read? (get-if-dit expr) v) 
