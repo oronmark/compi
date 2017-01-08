@@ -143,27 +143,41 @@
 (define count
 	(lambda (lst)
 		(if (null? lst)
-			-1
+			0
 			(+ 1 (count (cdr lst))))))
 
 
 (define box-all-args
 	(lambda (l-expr args minor)
 	;	(display "box-all-args\n")
+	;	  (disp args)
+ ; (disp minor)
+
 		(cond ((null? args) l-expr)
-		      ((to-box? l-expr (car args)) (box-all-args (box l-expr (car args) (+ minor 1)) (cdr args) (- minor 1)))
+		      ((to-box? l-expr (car args)) (box-all-args (box l-expr (car args) (- minor 1)) (cdr args) (- minor 1)))
 		      (else (box-all-args l-expr (cdr args) (- minor 1))))
 		))
+
+; (define box-all
+; 	(lambda (l-expr)
+; 	;	(display "box-all\n")
+;           (cond ((equal? (car l-expr) 'lambda-simple) (box-all-args l-expr (reverse-list (get-lambda-simple-param l-expr)) 
+;           												(- (count (get-lambda-simple-param l-expr)) 1)))
+;                 ((equal? (car l-expr) 'lambda-opt) (box-all-args l-expr 
+;                 					(reverse-list`(,@(get-lambda-opt-param l-expr) ,(get-lambda-opt-param-list l-expr))) 
+;                 										(- (count (get-lambda-simple-param l-expr)) 1)))
+;                 (else (box-all-args l-expr `(,(get-lambda-opt-param-list l-expr)) -1)))
+; 		))
 
 (define box-all
 	(lambda (l-expr)
 	;	(display "box-all\n")
           (cond ((equal? (car l-expr) 'lambda-simple) (box-all-args l-expr (reverse-list (get-lambda-simple-param l-expr)) 
-          												(- (count (get-lambda-simple-param l-expr)) 1)))
+          												(count (get-lambda-simple-param l-expr)) ))
                 ((equal? (car l-expr) 'lambda-opt) (box-all-args l-expr 
-                					(reverse-list`(,@(get-lambda-opt-param l-expr) ,(get-lambda-opt-param-list l-expr))) 
-                										(- (count (get-lambda-simple-param l-expr)) 1)))
-                (else (box-all-args l-expr `(,(get-lambda-opt-param-list l-expr)) -1)))
+                					(reverse-list `(,@(get-lambda-opt-param l-expr) ,(get-lambda-opt-param-list l-expr))) 
+                									(count `(,@(get-lambda-opt-param l-expr) ,(get-lambda-opt-param-list l-expr)))))
+                (else (box-all-args l-expr `(,(get-lambda-opt-param-list l-expr)) (count `(,(get-lambda-opt-param-list l-expr))))))
 		))
 
 (define box-set
