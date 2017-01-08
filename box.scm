@@ -132,22 +132,37 @@
             ((equal? (car l-expr) 'lambda-opt) (box-opt l-expr v minor))
             (else  (equal? (caaddr l-expr) (box-variadic l-expr v minor))))))
 
+(define reverse-list
+	(lambda (lst)
+		(if (null? lst)
+			lst
+			(cons (get-last-elem lst) (reverse-list (remove-last-elem lst))))
 
+		))
+
+(define count
+	(lambda (lst)
+		(if (null? lst)
+			-1
+			(+ 1 (count (cdr lst))))))
 
 
 (define box-all-args
 	(lambda (l-expr args minor)
 	;	(display "box-all-args\n")
 		(cond ((null? args) l-expr)
-		      ((to-box? l-expr (car args)) (box-all-args (box l-expr (car args) (+ minor 1)) (cdr args) (+ minor 1)))
-		      (else (box-all-args l-expr (cdr args) (+ minor 1))))
+		      ((to-box? l-expr (car args)) (box-all-args (box l-expr (car args) (+ minor 1)) (cdr args) (- minor 1)))
+		      (else (box-all-args l-expr (cdr args) (- minor 1))))
 		))
 
 (define box-all
 	(lambda (l-expr)
 	;	(display "box-all\n")
-          (cond ((equal? (car l-expr) 'lambda-simple) (box-all-args l-expr (get-lambda-simple-param l-expr) -1))
-                ((equal? (car l-expr) 'lambda-opt) (box-all-args l-expr `(,@(get-lambda-opt-param l-expr) ,(get-lambda-opt-param-list l-expr)) -1))
+          (cond ((equal? (car l-expr) 'lambda-simple) (box-all-args l-expr (reverse-list (get-lambda-simple-param l-expr)) 
+          												(- (count (get-lambda-simple-param l-expr)) 1)))
+                ((equal? (car l-expr) 'lambda-opt) (box-all-args l-expr 
+                					(reverse-list`(,@(get-lambda-opt-param l-expr) ,(get-lambda-opt-param-list l-expr))) 
+                										(- (count (get-lambda-simple-param l-expr)) 1)))
                 (else (box-all-args l-expr `(,(get-lambda-opt-param-list l-expr)) -1)))
 		))
 
