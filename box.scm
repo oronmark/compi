@@ -105,8 +105,8 @@
 			   (lst (get-lambda-opt-param-list l-expr))
 			   (rest (get-lambda-body l-expr)))
 			(if (equal? (car rest) 'seq)
-				`(,l-type ,args lst (seq ((set (pvar ,v ,minor) (box (pvar ,v ,minor))) ,@(box-var (cadr rest) v))))
-				`(,l-type ,args lst (seq ((set (pvar ,v ,minor) (box (pvar ,v ,minor))) ,(box-var rest v)))))
+				`(,l-type ,args ,lst (seq ((set (pvar ,v ,minor) (box (pvar ,v ,minor))) ,@(box-var (cadr rest) v))))
+				`(,l-type ,args ,lst (seq ((set (pvar ,v ,minor) (box (pvar ,v ,minor))) ,(box-var rest v)))))
 			)
 		))
 
@@ -165,35 +165,3 @@
 
 
 
-
-
-;;assignment sections:
-;;3- eliminate-nested-defines
-;;4- remove-applic-lambda-nil
-;;5- box-set
-;;6- pe->lex-pe
-;;7- annotate-tc
-	
-(define run
-  (lambda (expr sec)
-    (cond ((eq? sec 3) (eliminate-nested-defines expr))
-          ((eq? sec 4) (remove-applic-lambda-nil expr))
-          ((eq? sec 5) (box-set expr))
-          ((eq? sec 6) (pe->lex-pe expr))
-          (else (annotate-tc expr))
-          )))
-
-
-
-(define run-sq
-   (lambda (expr sec)
-	  (cond ((eq? sec 3) (run expr 3))
-	  		((eq? sec 4) (run (run expr 3) 4))
-	  		((eq? sec 5) (run (run (run expr 3) 4) 5))
-	  		((eq? sec 6) (run (run (run (run expr 3) 4) 5) 6))
-	  		(else (run (run (run (run (run expr 3) 4) 5) 6) 7)))
-
-  
- 
-
-		))

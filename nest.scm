@@ -92,10 +92,6 @@
 
 
 
-(define expr (parse '(lambda (x) (lambda () (set! x 1)))))
-
-
-
 
 
 
