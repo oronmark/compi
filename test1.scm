@@ -4,7 +4,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(load "box.scm")
+(load "nest.scm")
 (define test-func (lambda (x) 
 		    (annotate-tc
 		      (pe->lex-pe
@@ -91,8 +91,8 @@
   ;;  '(lambda (x) (define a 5) (lambda (y) (define x 10) (a 5)))    
     ;;;;;don't remove comment;;;;;;'(lambda (x) (define a 5) (define a 123) (lambda (y) (define x 10) (a 5)) 2)
      
-  ;- '(lambda (z) (define a 5) (define b 123) (lambda (y) (define x 10)
-	;-(define x1 (lambda (abc) (define a 56) (define x1 10) (+ 1 2))) (f 32 45 'a)) (a 5))
+  ;; '(lambda (z) (define a 5) (define b 123) (lambda (y) (define x 10)
+	;;(define x1 (lambda (abc) (define a 56) (define x1 10) (+ 1 2))) (f 32 45 'a)) (a 5))
 
      
   ;;  '(define x (lambda (x) x))
@@ -101,7 +101,7 @@
   ;;   '(define my-even? (lambda (e) (define even? (lambda (n) (or (zero? n) (odd? (- n 1))))) #t))
 
 
-   ;;   '(define odd? (lambda (n) (and (positive? n) (even? (- n 1)))))
+      '(define odd? (lambda (n) (and (positive? n) (even? (- n 1)))))
 
 
    ;;   '(even? e)
@@ -275,7 +275,7 @@
    
    ;;'(lambda (a) a (lambda (b c) (set! a 4) (+ a b) (lambda () (set! b 8))))
    
-   '(lambda (x) (lambda () (set! x 1)))  ;;error with part 5
+  ; '(lambda (x) (lambda () (set! x 1)))  ;;error with part 5
    
    
  ;;  '(lambda (x . y) (lambda () (set! x 1)))

@@ -4,7 +4,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(load "box.scm")
+(load "nest.scm")
 (define test-func (lambda (x) 
 		    (annotate-tc
 		      (pe->lex-pe
