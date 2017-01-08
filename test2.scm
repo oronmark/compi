@@ -29,13 +29,19 @@
 			(show-difference (cdr actual) (cdr expected)))
 	  (begin (display (format "\033[1;31m~s\033[0m" (car actual)))
 			(show-difference (cdr actual) (cdr expected)))))
-))	
+))
+
+(define try-catch
+  (lambda (try-thunk catch-thunk)
+    (guard (c (else (catch-thunk)))
+     (try-thunk))))
 			    
 (define assert
 	(lambda (input)
 		(set! tests-counter (+ 1 tests-counter))
+		(try-catch (lambda ()
 		(let ((actual-output (test-func input))
-		      (expected-output (full-cycle input)))
+		      (expected-output (full-cycle input)))			
 			(cond ((equal? actual-output expected-output)
 				(if show-passed-tests
 				  (begin (display (format "~s) ~s\n" tests-counter input))
@@ -45,8 +51,12 @@
 				  (set! failed-tests-counter (+ 1 failed-tests-counter))
 				  (display (format "~s) ~s\n" tests-counter input))
 				  (display (format "\033[1;31mFailed! ☹\033[0m\n\n\033[1;34mExpected:\n ~s\033[0m\n\n\033[1;29mActual:\n ~s\033[0m\n\n" expected-output actual-output))
-				#f))
-			)))
+				#f))))
+			(lambda () (set! failed-tests-counter (+ 1 failed-tests-counter))
+				(display (format "~s) ~s\n" tests-counter input))
+				(display 
+				    (format "\n\033[1;31mEXCEPTION OCCURED. PLEASE CHECK MANUALLY THE INPUT:\n ~s\033[0m\n\n" input)) #f))
+			))
 			
 (define runTests
   (lambda (tests-name lst)
@@ -354,6 +364,17 @@
       (define poo (lambda (y) y ))))
       (* (foo (poo (moo a)))
       (goo (* b c))))
+      
+   '(lambda (a b c)
+      (begin
+      (begin
+      (define foo (lambda (x) x ))
+      (define goo (lambda (y) y )))
+      (begin
+      (define moo (lambda (x) x ))
+      (define poo (lambda (y) y ))))
+      (* (foo (poo (moo a)))
+      (goo (* b c))) 1 2 (+ 3 5) 78)      
 	
   '(lambda (x) (set! x 3) (+ x 4))
   
@@ -1376,6 +1397,36 @@
 	;;test48
 	'(lambda() (if (lambda a (define x (lambda () x)) 8 ) (+ (- 9)) (lambda(x) (lambda () 
 	  (set! x (+ 1 x (lambda (x) (lambda () x (set! x 1)))))))))
+	  
+	;;test49  
+	'(lambda ()
+	  (define c
+	      (lambda ()
+		  (define c (lambda ()
+			      c))
+		  1))
+	      2)
+	      
+	;;test50
+	'(lambda (x . a) (lambda () (set! x x)))
+	
+	;;test51
+	'(lambda (a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16
+         a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31
+         a32 a33 a34 a35 a36 a37 a38 a39 a40 a41 a42 a43 a44 a45 a46
+         a47 a48 a49 a50)
+	    (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()  (lambda ()
+	      (lambda ()
+		(lambda ()
+		  (lambda ()
+
+
+			      (lambda ()
+				(+ a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14
+				a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27
+				a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 a40
+				a41 a42 a43 a44 a45 a46 a47 a48 a49 a50))))))))))))
+				)))))))))))))))))))))))))))))))))))))))))
     
 ))    
 

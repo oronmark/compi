@@ -141,19 +141,29 @@
           (else  (member-var? l-expr v)))
 		))
 
+(define get-lambda-param-list
+  (lambda (l-expr)
+        (cond ((equal? (car l-expr ) 'lambda-simple) (get-lambda-simple-param l-expr))
+              ((equal? (car l-expr ) 'lambda-opt) (append (get-lambda-opt-param l-expr) `(,(get-lambda-opt-param-list l-expr))))
+              (else  `(,(get-lambda-var-param l-expr))))))
+
+
 
 
 ;--------------------------------------------------------------------------------------;;part 4
 
+
 (define make-expr-no-redundant
-	(lambda (expr)
-		(let*  
-			((op (get-applic-operator expr))
-			 (args (get-applic-operands expr)))	
-				(if (and (is-lambda-expr? op) (null? args))
-                                   (get-lambda-body op)
+  (lambda (expr)
+    (let*  
+      ((op (get-applic-operator expr))
+       (args (get-applic-operands expr))) 
+          (if (and (is-lambda-expr? op) (null? args) (null? (get-lambda-simple-param op)))
+                                    (get-lambda-body op)
                                     expr)
-			)
+             
+        
+      )
  ))
 
 
@@ -174,8 +184,7 @@
                 ((equal? (car expr) 'lambda-opt) `(lambda-opt ,(get-lambda-opt-param expr) ,(get-lambda-opt-param-list expr)
                                                               ,(remove-applic-lambda-nil (get-lambda-body expr))))
                 ((equal? (car expr) 'lambda-var) `(lambda-var ,(get-lambda-var-param expr) 
-                                                                    ,(remove-applic-lambda-nil (get-lambda-body expr))))                                         
-
+                                                                    ,(remove-applic-lambda-nil (get-lambda-body expr))))                                  
                 ((equal? (car expr) 'applic) (make-expr-no-redundant `(applic ,(remove-applic-lambda-nil (get-applic-operator expr))
                                                                               ,(map remove-applic-lambda-nil  
                                                                                     (get-applic-operands expr)))))
