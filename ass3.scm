@@ -340,107 +340,107 @@
 
 ; ------------------------------------- Eliminate Nested Defines ;
 
-(define eliminate-nested-defines2
-  (lambda (expr)
-    expr))
+; (define eliminate-nested-defines2
+;   (lambda (expr)
+;     expr))
 
-(define eliminate-nested-defines
-  (lambda (expr)
-      (nested-def-parser expr) 
-    ))
+; (define eliminate-nested-defines
+;   (lambda (expr)
+;       (nested-def-parser expr) 
+;     ))
 
-(define zip
-  (lambda (l1 l2)
-    (if (or (null? l1) (null? l2))
-        '()
-        (cons (list (car l1) (car l2))
-              (zip (cdr l1) (cdr l2))))))
+; (define zip
+;   (lambda (l1 l2)
+;     (if (or (null? l1) (null? l2))
+;         '()
+;         (cons (list (car l1) (car l2))
+;               (zip (cdr l1) (cdr l2))))))
 
-(define nested-seq-helper
-  (lambda (vars vals)
-    (map (lambda (pair) `(set ,(car pair) ,(cadr pair))) (zip vars vals))
-    ))
+; (define nested-seq-helper
+;   (lambda (vars vals)
+;     (map (lambda (pair) `(set ,(car pair) ,(cadr pair))) (zip vars vals))
+;     ))
 
-(define build-applic-nested-def
-  (lambda (ribs rest)
-        (let* ((vars (map (lambda (x) (cadr x)) ribs))
-              (vals (map (lambda (x) (nested-def-parser (caddr x))) ribs))
-              (args (map (lambda (x) (cadr x)) vars))
-              (applics (map (lambda (x) '(const #f)) ribs)))
-          `(applic (lambda-simple ,args (seq (,@(nested-seq-helper vars vals) ,(nested-def-parser (car rest))))) ,applics)
-          )))
+; (define build-applic-nested-def
+;   (lambda (ribs rest)
+;         (let* ((vars (map (lambda (x) (cadr x)) ribs))
+;               (vals (map (lambda (x) (nested-def-parser (caddr x))) ribs))
+;               (args (map (lambda (x) (cadr x)) vars))
+;               (applics (map (lambda (x) '(const #f)) ribs)))
+;           `(applic (lambda-simple ,args (seq (,@(nested-seq-helper vars vals) ,(nested-def-parser (car rest))))) ,applics)
+;           )))
 
-(define contain-defs?
-  (lambda(expr)
-    (ormap (lambda(exp) (def-expr? exp)) expr)
-    ))
+; (define contain-defs?
+;   (lambda(expr)
+;     (ormap (lambda(exp) (def-expr? exp)) expr)
+;     ))
 
-(define def-expr?
-  (lambda (expr)
-    (and (pair? expr) (eq? (car expr) 'def))
-    ))
+; (define def-expr?
+;   (lambda (expr)
+;     (and (pair? expr) (eq? (car expr) 'def))
+;     ))
 
-(define break-nested
-  (lambda (expr)
-    (let  ((listOfdefines (mayer-break expr (lambda (x y) x))) ;get define
-           (rest (mayer-break expr (lambda(x y) y)))) ; get rest of body
-           (build-applic-nested-def listOfdefines rest)
-    )))
+; (define break-nested
+;   (lambda (expr)
+;     (let  ((listOfdefines (mayer-break expr (lambda (x y) x))) ;get define
+;            (rest (mayer-break expr (lambda(x y) y)))) ; get rest of body
+;            (build-applic-nested-def listOfdefines rest)
+;     )))
 
-(define mayer-break
-  (lambda (pes ret-ds-es)
-    (if (null? pes) (ret-ds-es '() '())
-      (mayer-break
-        (cdr pes)
-        (lambda (ds es)
-          (cond ((eq? (caar pes) 'def)
-                 (ret-ds-es (cons (car pes) ds) es))
-                ((eq? (caar pes) 'seq)
-                 (mayer-break (cadar pes)
-                        (lambda (ds1 es1)
-                          (ret-ds-es (append ds1 ds)
-                                     (append es1 es)))))
-                (else (ret-ds-es ds (cons (car pes) es)))))))))
+; (define mayer-break
+;   (lambda (pes ret-ds-es)
+;     (if (null? pes) (ret-ds-es '() '())
+;       (mayer-break
+;         (cdr pes)
+;         (lambda (ds es)
+;           (cond ((eq? (caar pes) 'def)
+;                  (ret-ds-es (cons (car pes) ds) es))
+;                 ((eq? (caar pes) 'seq)
+;                  (mayer-break (cadar pes)
+;                         (lambda (ds1 es1)
+;                           (ret-ds-es (append ds1 ds)
+;                                      (append es1 es)))))
+;                 (else (ret-ds-es ds (cons (car pes) es)))))))))
 
-(define nested-def-parser
-  (let ((run
-          (compose-patterns
-            (pattern-rule
-              `(lambda-simple ,(? 'vars) ,(? 'body) . ,(? 'bodies))
-               (lambda (vars body bodies)
-                 `(lambda-simple ,vars ,(nested-def-parser body))
-                 ))
-            (pattern-rule
-              `(lambda-var ,(? 'vars) ,(? 'body) . ,(? 'bodies))
-               (lambda (vars body bodies)
-                 `(lambda-var ,vars ,(nested-def-parser body))
-                 ))
-            (pattern-rule
-              `(lambda-opt ,(? 'vars) ,(? 'body) . ,(? 'bodies))
-               (lambda (vars body bodies)
-                 ;bodies
-                 `(lambda-opt ,vars ,(nested-def-parser body) ,@(nested-def-parser bodies))
-                 ))
-            (pattern-rule
-              `(applic ,(? 'lambda) . ,(? 'args))
-               (lambda (lambda-expr args)
-                 `(applic ,(nested-def-parser lambda-expr) ,@(nested-def-parser args))
-                 ))
-            (pattern-rule
-              `(seq ,(? 'body))
-                (lambda (body)
-                  (if (contain-defs? body)
-                   (break-nested body)
-                  `(seq ,body))
-                  ))
-            (pattern-rule
-              `(def ,(? 'var)  ,(? 'body))
-                (lambda (var body)
-                 `(def ,var ,(nested-def-parser body))
-                 ))
-            )))
-        (lambda (sexpr)
-          (run sexpr (lambda() sexpr)))))
+; (define nested-def-parser
+;   (let ((run
+;           (compose-patterns
+;             (pattern-rule
+;               `(lambda-simple ,(? 'vars) ,(? 'body) . ,(? 'bodies))
+;                (lambda (vars body bodies)
+;                  `(lambda-simple ,vars ,(nested-def-parser body))
+;                  ))
+;             (pattern-rule
+;               `(lambda-var ,(? 'vars) ,(? 'body) . ,(? 'bodies))
+;                (lambda (vars body bodies)
+;                  `(lambda-var ,vars ,(nested-def-parser body))
+;                  ))
+;             (pattern-rule
+;               `(lambda-opt ,(? 'vars) ,(? 'body) . ,(? 'bodies))
+;                (lambda (vars body bodies)
+;                  ;bodies
+;                  `(lambda-opt ,vars ,(nested-def-parser body) ,@(nested-def-parser bodies))
+;                  ))
+;             (pattern-rule
+;               `(applic ,(? 'lambda) . ,(? 'args))
+;                (lambda (lambda-expr args)
+;                  `(applic ,(nested-def-parser lambda-expr) ,@(nested-def-parser args))
+;                  ))
+;             (pattern-rule
+;               `(seq ,(? 'body))
+;                 (lambda (body)
+;                   (if (contain-defs? body)
+;                    (break-nested body)
+;                   `(seq ,body))
+;                   ))
+;             (pattern-rule
+;               `(def ,(? 'var)  ,(? 'body))
+;                 (lambda (var body)
+;                  `(def ,var ,(nested-def-parser body))
+;                  ))
+;             )))
+;         (lambda (sexpr)
+;           (run sexpr (lambda() sexpr)))))
 
 
 ; ------------------------------------- Eliminate Nested Defines ;
